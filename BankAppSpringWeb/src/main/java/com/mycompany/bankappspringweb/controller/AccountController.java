@@ -23,6 +23,7 @@ public class AccountController {
     @Autowired
     AccountDAO ad;
     
+    //FOR MAKING NEW ACCOUNT
     @RequestMapping("/createnewaccount")
     public String createNewAccount(Model m, HttpSession session){
         if(session.getAttribute("uName")!= null){
@@ -51,6 +52,7 @@ public class AccountController {
         return "redirect:login";
     }
     
+    //FOR WITHDAWN ACCOUNT BALANCE
     @RequestMapping("/withdraw")
     public String withdraw(Model m, HttpSession session){
         if(session.getAttribute("uName")!= null){
@@ -81,4 +83,33 @@ public class AccountController {
         }
         return "redirect:login";
     }
+    
+    //FOR DEPOSITE ACCOUNT BALANCE
+    @RequestMapping("/deposite")
+    public String deposite(Model m, HttpSession session){
+        if(session.getAttribute("uName")!= null){
+            m.addAttribute("account", new AccountCommand());
+            return "deposite";
+        } 
+        return "redirect:login";
+    }
+    
+    @RequestMapping(value={"/processdeposite"}, method=RequestMethod.POST)
+    public String processDeposite(@ModelAttribute("account") AccountCommand ac, HttpSession session)
+    {
+        if(session.getAttribute("uName")!= null)
+        {
+            if(ad.depositeAmount(ac.getAccountNumber(), ac.getAccountBalance())){
+            session.setAttribute("message", "Amount deposited successfully");
+            return "redirect:deposite";
+            }
+            else
+            {
+            session.setAttribute("message", "Error !! Account doesnt exist");
+            return "redirect:deposite";   
+            }
+        }
+        return "redirect:login";
+    }
+    
 }
